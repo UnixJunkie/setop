@@ -59,31 +59,30 @@ Arg.parse
                                        m1: set2 - set1"       );
    ("-o ", Arg.Set_string opts.out  , "output:'sepchar'"      );
    ("-v" , Arg.Set        opts.debug, " debug mode"           )]
-  (fun _ -> ()) "FBR: write this"
+  (fun _ -> ())
+  "FBR: write this";
 
-(* Arg.parse cmd_line ignore "FBR: to write"; *)
+if !(opts.f1) = "" then failwith "-f1 is mandatory";
+if !(opts.f2) = "" then failwith "-f2 is mandatory";
+if !(opts.op) = "" then failwith "-op is mandatory";
 
-(* if !(opts.f1) = "" then failwith "-f1 is mandatory"; *)
-(* if !(opts.f2) = "" then failwith "-f2 is mandatory"; *)
-(* if !(opts.op) = "" then failwith "-op is mandatory"; *)
+(* extract sep. chars and col. numbers *)
+let f1, sep1, col1 =
+  Scanf.sscanf !(opts.f1) "%s:%c:%d" (fun f sep col -> (f, sep, col)) in
+let f2, sep2, col2 =
+  Scanf.sscanf !(opts.f2) "%s:%c:%d" (fun f sep col -> (f, sep, col)) in
+let out, oset =
+  Scanf.sscanf !(opts.out) "%s:%c" (fun f sep -> f, sep) in
 
-(* (\* extract sep. chars and col. numbers *\) *)
-(* let f1, sep1, col1 = *)
-(*   Scanf.sscanf !(opts.f1) "%s:%c:%d" (fun f sep col -> (f, sep, col)) in *)
-(* let f2, sep2, col2 = *)
-(*   Scanf.sscanf !(opts.f2) "%s:%c:%d" (fun f sep col -> (f, sep, col)) in *)
-(* let out, oset = *)
-(*   Scanf.sscanf !(opts.out) "%s:%c" (fun f sep -> f, sep) in *)
+(* create the 1st key set and hash table *)
+let set1, ht1 = process_file f1 sep1 col1 in
 
-(* (\* create the 1st key set and hash table *\) *)
-(* let set1, ht1 = process_file f1 sep1 col1 in *)
+(* create the 2nd key set and hash table *)
+let set2, ht2 = process_file f2 sep2 col2 in
 
-(* (\* create the 2nd key set and hash table *\) *)
-(* let set2, ht2 = process_file f2 sep2 col2 in *)
+(* operate on the key sets *)
 
-(* (\* operate on the key sets *\) *)
+(* create and output concatenated lines *)
 
-(* (\* create and output concatenated lines *\) *)
-
-(* eprintf "The END\n"; *)
-(* exit 0 *)
+eprintf "The END\n";
+exit 0
