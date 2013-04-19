@@ -8,6 +8,7 @@ Plugins:     META (0.3)
 
 Executable setop
   Path:       .
+  BuildDepends:   dolog
+  CompiledObject: native
   BuildTools: ocamlbuild
   MainIs:     setop.ml
-  
