@@ -1,9 +1,7 @@
-#!/usr/bin/env ocamlscript
-Ocaml.packs := [ "str"; "dolog" ]
---
 
 (* set operations on unsorted text file lines *)
 
+open Log
 open Printf
 
 module HT = Hashtbl
@@ -33,10 +31,6 @@ let process_file f sepchar colnum =
   close_in input;
   (ht, !set)
 
-(* main *)
-
-(* process options *)
-
 type options =
     { f1   : string ref ;
       f2   : string ref ;
@@ -44,44 +38,50 @@ type options =
       out  : string ref ;
       debug: bool ref   }
 
-let opts = { f1 = ref "";
-             f2 = ref "";
-             op = ref "";
-             out = ref "/dev/stdout: ";
-             debug = ref false } in
+let main () =
 
-Arg.parse
-  [("-f1", Arg.Set_string opts.f1   , "file1:'sepchar':colnum");
-   ("-f2", Arg.Set_string opts.f2   , "file2:'sepchar':colnum");
-   ("-op", Arg.Set_string opts.op   , "opchar u: union); n: intersection); \
-                                       m2: set1 - set2); \
-                                       m1: set2 - set1"       );
-   ("-o" , Arg.Set_string opts.out  , "output:'sepchar'"      );
-   ("-v" , Arg.Set        opts.debug, " debug mode"           )]
-  (fun _ -> ())
-  "FBR: write this";
+  set_log_level DEBUG;
 
-if !(opts.f1) = "" then failwith "-f1 is mandatory";
-if !(opts.f2) = "" then failwith "-f2 is mandatory";
-if !(opts.op) = "" then failwith "-op is mandatory";
+  (* process options *)
+
+  let opts = { f1 = ref "";
+               f2 = ref "";
+               op = ref "";
+               out = ref "/dev/stdout: ";
+               debug = ref false } in
+
+  Arg.parse
+    [("-f1", Arg.Set_string opts.f1   , "file1:'sepchar':colnum");
+     ("-f2", Arg.Set_string opts.f2   , "file2:'sepchar':colnum");
+     ("-op", Arg.Set_string opts.op   , "opchar u: union); n: intersection); \
+                                         m2: set1 - set2); \
+                                         m1: set2 - set1"       );
+     ("-o" , Arg.Set_string opts.out  , "output:'sepchar'"      );
+     ("-v" , Arg.Set        opts.debug, " debug mode"           )]
+    (fun _ -> ())
+    "FBR: write this help msg";
+
+  if !(opts.f1) = "" then failwith "-f1 is mandatory";
+  if !(opts.f2) = "" then failwith "-f2 is mandatory";
+  if !(opts.op) = "" then failwith "-op is mandatory";
 
 (* extract sep. chars and col. numbers *)
-let f1, sep1, col1 =
-  Scanf.sscanf !(opts.f1) "%s:%c:%d" (fun f sep col -> (f, sep, col)) in
-let f2, sep2, col2 =
-  Scanf.sscanf !(opts.f2) "%s:%c:%d" (fun f sep col -> (f, sep, col)) in
-let out, oset =
-  Scanf.sscanf !(opts.out) "%s:%c" (fun f sep -> f, sep) in
+  let f1, sep1, col1 =
+    Scanf.sscanf !(opts.f1) "%s:%c:%d" (fun f sep col -> (f, sep, col)) in
+  let f2, sep2, col2 =
+    Scanf.sscanf !(opts.f2) "%s:%c:%d" (fun f sep col -> (f, sep, col)) in
+  let out, oset =
+    Scanf.sscanf !(opts.out) "%s:%c" (fun f sep -> f, sep) in
 
 (* create the 1st key set and hash table *)
-let set1, ht1 = process_file f1 sep1 col1 in
+  let set1, ht1 = process_file f1 sep1 col1 in
 
 (* create the 2nd key set and hash table *)
-let set2, ht2 = process_file f2 sep2 col2 in
+  let set2, ht2 = process_file f2 sep2 col2 in
 
 (* operate on the key sets *)
 
 (* create and output concatenated lines *)
 
-eprintf "The END\n";
-exit 0
+  info (lazy "The END\n");
+  exit 0
