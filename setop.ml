@@ -1,7 +1,7 @@
 
 (* set operations on unsorted text file lines *)
 
-open Log
+(* open Log *)
 open Printf
 
 module HT = Hashtbl
@@ -48,7 +48,7 @@ type options =
 
 let main () =
 
-  set_log_level DEBUG;
+  (* set_log_level INFO; *)
 
   (* process options *)
 
@@ -68,19 +68,27 @@ let main () =
      ("-o" , Arg.Set_string opts.out  , "output:'sepchar'"      );
      ("-v" , Arg.Set        opts.debug, " debug mode"           )]
     (fun _ -> ())
-    "FBR: write this help msg";
+    (sprintf "usage: %s -f1 \"in1.csv:,:4\" -f2 \"in2.csv:,:1\" -op n \
+                        -o \"out.csv:,\"" Sys.argv.(0));
 
   if !(opts.f1) = "" then failwith "-f1 is mandatory";
   if !(opts.f2) = "" then failwith "-f2 is mandatory";
   if !(opts.op) = "" then failwith "-op is mandatory";
 
+  (* printf "f1: %s\n" !(opts.f1); *)
+  (* printf "f2: %s\n" !(opts.f2); *)
+  (* printf "out: %s\n" !(opts.out); *)
+
   (* extract sep. chars and col. numbers *)
-  let f1, sep1, col1 =
-    Scanf.sscanf !(opts.f1) "%s:%c:%d" (fun f sep col -> (f, sep, col)) in
-  let f2, sep2, col2 =
-    Scanf.sscanf !(opts.f2) "%s:%c:%d" (fun f sep col -> (f, sep, col)) in
-  let out, oset =
-    Scanf.sscanf !(opts.out) "%s:%c" (fun f sep -> f, sep) in
+  let f1, sep1, col1 = match str_split ":" !(opts.f1) with
+    | f :: sep :: col :: [] -> (f, sep.[0], int_of_string col)
+    | _ -> failwith ("strange -f1: " ^ !(opts.f1)) in
+  let f2, sep2, col2 = match str_split ":" !(opts.f2) with
+    | f :: sep :: col :: [] -> (f, sep.[0], int_of_string col)
+    | _ -> failwith ("strange -f2: " ^ !(opts.f2)) in
+  let out, osep = match str_split ":" !(opts.out) with
+    | f :: sep :: [] -> (f, sep.[0])
+    | _ -> failwith ("strange -o: " ^ !(opts.out)) in
 
   (* create the 1st key set and hash table *)
   let set1, ht1 = process_file f1 sep1 col1 in
@@ -95,7 +103,16 @@ let main () =
     | Diff1 -> SS.diff  set2 set1
     | Diff2 -> SS.diff  set1 set2
   in
-  (* create and output concatenated lines *)
 
-  info (lazy "The END\n");
-  exit 0
+  (* create and output concatenated lines *)
+  let output = open_out out in
+  SS.iter
+    (fun elt ->
+      let s1 = HT.find ht1 elt in
+      let s2 = HT.find ht2 elt in
+      fprintf output "%s%c%s\n" s1 osep s2)
+    final_set;
+  close_out output
+;;
+
+main()
