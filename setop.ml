@@ -1,15 +1,14 @@
 #!/usr/bin/env ocamlscript
-Ocaml.packs := [ "batteries" ]
+Ocaml.packs := [ "str"; "dolog" ]
 --
 
 (* set operations on unsorted text file lines *)
 
 open Printf
 
-module F  = BatFile
 module HT = Hashtbl
-module L  = BatList
-module S  = BatString
+module L  = List
+module S  = String
 module SS = Set.Make(String)
 
 type set_op = Union | Inter | Diff
@@ -57,7 +56,7 @@ Arg.parse
    ("-op", Arg.Set_string opts.op   , "opchar u: union); n: intersection); \
                                        m2: set1 - set2); \
                                        m1: set2 - set1"       );
-   ("-o ", Arg.Set_string opts.out  , "output:'sepchar'"      );
+   ("-o" , Arg.Set_string opts.out  , "output:'sepchar'"      );
    ("-v" , Arg.Set        opts.debug, " debug mode"           )]
   (fun _ -> ())
   "FBR: write this";
