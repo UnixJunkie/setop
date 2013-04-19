@@ -1,8 +1,9 @@
 setop
 =====
 
-Set operations on unsorted text file lines, a missing UNIX command.
-setop should become a handy replacement for the commands comm, uniq and join.
+Set operations on unsorted text file lines.
+setop should become a handy replacement for a combination of the commands
+paste, comm, uniq and join.
 
 The tool should be useful to people handling computational experiment results
-but no will to create a database table and writing SQL queries.
+but having no will to create a database table and write SQL queries.
