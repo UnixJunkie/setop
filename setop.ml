@@ -43,8 +43,7 @@ type options =
     { f1   : string ref ;
       f2   : string ref ;
       op   : string ref ;
-      out  : string ref ;
-      debug: bool ref   }
+      out  : string ref }
 
 let main () =
 
@@ -56,18 +55,16 @@ let main () =
   let opts = { f1 = ref "";
                f2 = ref "";
                op = ref "";
-               out = ref "/dev/stdout: ";
-               debug = ref false } in
+               out = ref "/dev/stdout: " } in
 
   Arg.parse
-    [("-f1", Arg.Set_string opts.f1   , "file1:'sepchar':colnum");
-     ("-f2", Arg.Set_string opts.f2   , "file2:'sepchar':colnum");
-     ("-op", Arg.Set_string opts.op   , "opchar u: union); n: intersection); \
-                                         m2: set1 - set2); \
-                                         m1: set2 - set1"       );
-     ("-o" , Arg.Set_string opts.out  , "output:'sepchar'"      );
-     ("-v" , Arg.Set        opts.debug, " debug mode"           )]
-    (fun _ -> ())
+    [("-f1", Arg.Set_string opts.f1   , "\"file1:sepchar:colnum\"");
+     ("-f2", Arg.Set_string opts.f2   , "\"file2:sepchar:colnum\"");
+     ("-op", Arg.Set_string opts.op   , "opchar u: union; n: intersection; \
+                                         m2: set1 - set2; \
+                                         m1: set2 - set1"     );
+     ("-o" , Arg.Set_string opts.out  , "\"output:sepchar\""  )]
+  (fun _ -> ())
     (sprintf "usage: %s -f1 \"in1.csv:,:4\" -f2 \"in2.csv:,:1\" -op n \
                         -o \"out.csv:,\"" Sys.argv.(0));
 
