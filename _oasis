@@ -8,7 +8,7 @@ Plugins:     META (0.3)
 
 Executable setop
   Path:       .
-  BuildDepends:   str, unix, dolog
+  BuildDepends:   str, unix
   CompiledObject: native
   BuildTools: ocamlbuild
   MainIs:     setop.ml
