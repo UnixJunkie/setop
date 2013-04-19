@@ -1,0 +1,13 @@
+OASISFormat: 0.3
+Name:        setop
+Version:     0.1
+Synopsis:    paste command with set operations on unsorted text file lines
+Authors:     Francois Berenger
+License:     LGPL-2.1 with OCaml linking exception
+Plugins:     META (0.3)
+
+Executable setop
+  Path:       .
+  BuildTools: ocamlbuild
+  MainIs:     setop.ml
+  
